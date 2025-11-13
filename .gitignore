@@ -1,0 +1,37 @@
+# OS/Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Virtual envs
+.env
+.venv/
+venv/
+baseline/
+
+# Datasets and archives
+tiny-imagenet-200/
+data/
+*.zip
+
+# Checkpoints and large artifacts
+checkpoint.pth.tar
+model_best.pth.tar
+*.pth
+*.pth.tar
+*.pt
+
+# Profiler reports
+*.ncu-rep
+*.nsys-rep
+
+# Results (keep CSVs)
+results/*
+!results/*.csv
+!results/.gitkeep
+
