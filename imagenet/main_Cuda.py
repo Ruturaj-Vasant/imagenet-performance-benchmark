@@ -128,17 +128,17 @@ def main():
 
     args.distributed = args.world_size > 1 or args.multiprocessing_distributed
 
-    use_accel = not args.no_accel and torch.accelerator.is_available()
+    use_accel = not args.no_accel and torch.cuda.is_available()
 
     if use_accel:
-        device = torch.accelerator.current_accelerator()
+        device = torch.device("cuda")
     else:
         device = torch.device("cpu")
 
     print(f"Using device: {device}")
 
-    if device.type =='cuda':
-        ngpus_per_node = torch.accelerator.device_count()
+    if device.type == 'cuda':
+        ngpus_per_node = torch.cuda.device_count()
         if ngpus_per_node == 1 and args.dist_backend == "nccl":
             warnings.warn("nccl backend >=2.5 requires GPU count>1, see https://github.com/NVIDIA/nccl/issues/103 perhaps use 'gloo'")
     else:
@@ -160,12 +160,14 @@ def main_worker(gpu, ngpus_per_node, args):
     global best_acc1
     args.gpu = gpu
 
-    use_accel = not args.no_accel and torch.accelerator.is_available()
+    use_accel = not args.no_accel and torch.cuda.is_available()
 
     if use_accel:
         if args.gpu is not None:
-            torch.accelerator.set_device_index(args.gpu)
-        device = torch.accelerator.current_accelerator()
+            torch.cuda.set_device(args.gpu)
+            device = torch.device(f"cuda:{args.gpu}")
+        else:
+            device = torch.device("cuda")
     else:
         device = torch.device("cpu")
 
@@ -410,7 +412,7 @@ def main_worker(gpu, ngpus_per_node, args):
 
 def train(train_loader, model, criterion, optimizer, epoch, device, args, flops_img=None):
     
-    use_accel = not args.no_accel and torch.accelerator.is_available()
+    use_accel = not args.no_accel and torch.cuda.is_available()
 
     batch_time = AverageMeter('Time', use_accel, ':6.3f', Summary.NONE)
     data_time = AverageMeter('Data', use_accel, ':6.3f', Summary.NONE)
@@ -482,14 +484,17 @@ def train(train_loader, model, criterion, optimizer, epoch, device, args, flops_
 
 
 def validate(val_loader, model, criterion, args, flops_img=None):
-
-    use_accel = not args.no_accel and torch.accelerator.is_available()
+    use_accel = not args.no_accel and torch.cuda.is_available()
 
     total_processed = 0
     def run_validate(loader, base_progress=0):
 
         if use_accel:
-            device = torch.accelerator.current_accelerator()
+            if args.gpu is not None:
+                torch.cuda.set_device(args.gpu)
+                device = torch.device(f"cuda:{args.gpu}")
+            else:
+                device = torch.device("cuda")
         else:
             device = torch.device("cpu")
 
@@ -499,8 +504,8 @@ def validate(val_loader, model, criterion, args, flops_img=None):
             for i, (images, target) in enumerate(loader):
                 i = base_progress + i
                 if use_accel:
-                    if args.gpu is not None and device.type=='cuda':
-                        torch.accelerator.set_device_index(args.gpu)
+                    if args.gpu is not None and device.type == 'cuda':
+                        torch.cuda.set_device(args.gpu)
                         images = images.cuda(args.gpu, non_blocking=True)
                         target = target.cuda(args.gpu, non_blocking=True)
                     else:
@@ -611,8 +616,8 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
     def all_reduce(self):    
-        if self.use_accel:
-            device = torch.accelerator.current_accelerator()
+        if self.use_accel and torch.cuda.is_available():
+            device = torch.device("cuda")
         else:
             device = torch.device("cpu")
         total = torch.tensor([self.sum, self.count], dtype=torch.float32, device=device)
