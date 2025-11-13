@@ -14,7 +14,7 @@ TINYTAR_URL="http://cs231n.stanford.edu/tiny-imagenet-200.zip"
 TINYTAR_ZIP="$DATA_DIR/tiny.zip"
 TINY_DIR="$DATA_DIR/tiny-imagenet-200"
 RESULTS_DIR="results"
-MODELS=(resnet18 mobilenet_v2 resnet50 vgg11_bn)
+MODELS=(resnet18 mobilenet_v2 resnet50 squeezenet1_1)
 BATCH_SIZE=${BATCH_SIZE:-128}
 WORKERS=${WORKERS:-4}
 MAX_BATCHES=${MAX_BATCHES:-50}
@@ -30,8 +30,11 @@ if torch.cuda.is_available():
 PY
 
 echo "\n==> Installing Python dependencies"
-python3 -m pip install -q --upgrade pip
+echo "\n==> Installing PyTorch (CPU)"
+python3 -m pip install -q torch torchvision --index-url https://download.pytorch.org/whl/cpu || true
+echo "\n==> Installing required Python packages"
 python3 -m pip install -q pandas matplotlib numpy thop psutil || true
+python3 -m pip install -q -r imagenet/requirements.txt || true
 
 if [ ! -d "$REPO_DIR" ]; then
   echo "\n==> Cloning repo: $REPO_URL"
@@ -39,9 +42,6 @@ if [ ! -d "$REPO_DIR" ]; then
 fi
 
 cd "$REPO_DIR"
-
-echo "\n==> Repo requirements"
-python3 -m pip install -q -r imagenet/requirements.txt || true
 
 echo "\n==> Preparing Tiny-ImageNet"
 mkdir -p "$DATA_DIR"
@@ -90,4 +90,3 @@ fi
 echo "\n====================================="
 echo "   ALL DONE! Check results folder."
 echo "====================================="
-

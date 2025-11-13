@@ -30,8 +30,10 @@ model_best.pth.tar
 *.ncu-rep
 *.nsys-rep
 
-# Results (keep CSVs)
+# Results: keep CSVs, logs, and small plots
 results/*
 !results/*.csv
+!results/*.log
+!results/*.png
+!results/*.svg
 !results/.gitkeep
-
