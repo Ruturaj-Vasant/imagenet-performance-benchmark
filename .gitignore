@@ -32,3 +32,21 @@ model_best.pth.tar
 
 # Results: ignore all benchmark outputs
 results/
+
+# LaTeX build artifacts (keep only PDFs)
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+_minted*
+texput.log
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
