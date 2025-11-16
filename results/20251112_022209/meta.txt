@@ -1,0 +1,6 @@
+Benchmark start: 20251112_022209
+Dataset: tiny-imagenet-200
+Batch size: 128, Workers: 8
+Extra flags: 
+System: Darwin Mac.lan 25.0.0 Darwin Kernel Version 25.0.0: Wed Sep 17 21:41:50 PDT 2025; root:xnu-12377.1.9~141/RELEASE_ARM64_T6030 arm64
+\n==> Running model: resnet18

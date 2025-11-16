@@ -30,8 +30,11 @@ model_best.pth.tar
 *.ncu-rep
 *.nsys-rep
 
-# Results: ignore all benchmark outputs
-results/
+# Results: include benchmark outputs in git
+# (was: results/)
+
+# Ignore accidental nested repo directory
+imagenet-performance-benchmark/
 
 # LaTeX build artifacts (keep only PDFs)
 *.aux
