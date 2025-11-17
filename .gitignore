@@ -53,3 +53,6 @@ texput.log
 *.nav
 *.snm
 *.vrb
+
+# Do not track LaTeX source in Report
+/Report/report.tex
